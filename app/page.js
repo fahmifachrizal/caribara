@@ -3,6 +3,7 @@ import Footer from "@/components/Footer"
 import HeroSection from "@/components/HeroSection"
 import FeatureBlock from "@/components/FeatureBlock"
 import { CheckCircle2, Shield, Clock, Award } from "lucide-react"
+import FloatingActionButton from "@/components/FloatingActionButton"
 
 export default function Home() {
   return (
@@ -197,6 +198,7 @@ export default function Home() {
       </section>
 
       <Footer />
+      <FloatingActionButton />
     </div>
   )
 }
