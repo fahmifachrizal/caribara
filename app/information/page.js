@@ -2,7 +2,6 @@
 
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
 import { Check, ArrowRight } from "lucide-react"
@@ -85,8 +84,6 @@ export default function InformationPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
-      <Header />
-
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden bg-linear-to-br from-zinc-100 to-zinc-200 dark:from-zinc-900 dark:to-zinc-800">
         <div className="absolute inset-0 opacity-10">

@@ -1,4 +1,3 @@
-import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import HeroSection from "@/components/HeroSection"
 import FeatureBlock from "@/components/FeatureBlock"
@@ -8,8 +7,6 @@ import FloatingActionButton from "@/components/FloatingActionButton"
 export default function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
-      <Header />
-
       <HeroSection />
 
       {/* Feature Block 1 - Premium Fleet */}

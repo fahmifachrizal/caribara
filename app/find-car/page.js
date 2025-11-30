@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import CarCard from "@/components/CarCard"
 import { Button } from "@/components/ui/button"
@@ -175,8 +174,6 @@ export default function FindCarPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
-      <Header />
-
       {/* Hero Section */}
       <section className="relative py-20 bg-linear-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -224,7 +221,7 @@ export default function FindCarPage() {
       </section>
 
       {/* Filter Section */}
-      <section className="sticky top-[73px] z-40 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-lg border-b shadow-sm">
+      <section className="sticky top-[72px] z-50 bg-white/80 dark:bg-zinc-950/95 backdrop-blur-lg">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">

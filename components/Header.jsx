@@ -4,18 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-lg border-b">
+    <header className="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-lg">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-linear-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-              C
+            <div className="w-10 h-10 flex items-center justify-center text-white font-bold text-xl">
+              <Image src="/icon/caribara-light.png" alt="CariBara Logo" width={40} height={40} />
             </div>
             <span className="text-2xl font-bold">CariBara</span>
           </Link>
