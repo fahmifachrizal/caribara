@@ -2,13 +2,18 @@
 
 import { useState, useEffect, useRef } from "react"
 import {
-  Info,
   ThumbsUp,
   Star,
   ChevronUp,
   ChevronLeft,
   ChevronRight,
+  Wrench,
 } from "lucide-react"
+import {
+  FacebookAdCard,
+  GoogleSearchCard,
+  TwitterPostCard,
+} from "./EntryPointCard"
 
 export default function FloatingActionButton() {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -17,33 +22,22 @@ export default function FloatingActionButton() {
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [currentSlide, setCurrentSlide] = useState(0)
-
   const [isAnimationDone, setIsAnimationDone] = useState(false)
 
   const containerRef = useRef(null)
 
   const slides = [
-    { title: "Feature 1", content: "Your amazing content here" },
-    { title: "Feature 2", content: "More awesome content" },
-    { title: "Feature 3", content: "Even more great stuff" },
+    { title: "Google Search", component: <GoogleSearchCard /> },
+    { title: "Twitter/X Post", component: <TwitterPostCard /> },
+    { title: "Facebook Ad", component: <FacebookAdCard /> },
   ]
 
-  // Width logic
-  const getWidth = () => {
-    if (isLocked) return "400px"
-    if (isExpanded && isLiked) return "248px"
-    if (isExpanded && !isLiked) return "168px"
-    if (isLiked) return "192px"
-    return "56px"
-  }
-
-  // Detect end of expand animation
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
 
     const handleEnd = (e) => {
-      if (e.propertyName === "width") {
+      if (e.propertyName === "width" || e.propertyName === "height") {
         setIsAnimationDone(true)
       }
     }
@@ -52,14 +46,12 @@ export default function FloatingActionButton() {
     return () => el.removeEventListener("transitionend", handleEnd)
   }, [])
 
-  // Reset animation status when expanding
   useEffect(() => {
     if (isExpanded || isLocked) {
       setIsAnimationDone(false)
     }
   }, [isExpanded, isLocked])
 
-  // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -77,8 +69,7 @@ export default function FloatingActionButton() {
   }, [isLocked])
 
   const handleLike = () => {
-    setIsLiked(true)
-    console.log("Liked!")
+    setIsLiked(!isLiked)
   }
 
   const handleRating = (value) => {
@@ -105,56 +96,65 @@ export default function FloatingActionButton() {
         ref={containerRef}
         onMouseEnter={() => !isLocked && setIsExpanded(true)}
         onMouseLeave={() => !isLocked && setIsExpanded(false)}
-        className="bg-zinc-900/40 dark:bg-zinc-950/40 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl transition-all duration-200"
+        className="bg-zinc-900/95 dark:bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl transition-all duration-300 ease-out w-auto"
         style={{
-          height: isLocked ? "320px" : "54px",
-          width: getWidth(),
-          transformOrigin: "right center",
+          height: isLocked ? "240px" : "56px",
         }}>
         <div className="h-full flex flex-col justify-end overflow-hidden">
-          {/* --------------------------
-              CAROUSEL (Locked Mode)
-          --------------------------- */}
+          {/* Carousel Section (Locked Mode) */}
           {isLocked && isAnimationDone && (
-            <div className="flex-1 px-4 py-2 mb-2 animate-in fade-in duration-300">
-              <div className="h-full relative">
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <h3 className="text-2xl font-bold mb-4 text-white">
-                      {slides[currentSlide].title}
-                    </h3>
-                    <p className="text-zinc-300">
-                      {slides[currentSlide].content}
-                    </p>
-                    <div className="mt-6 text-sm text-zinc-400">
-                      Slide {currentSlide + 1} of {slides.length}
-                    </div>
+            <div className="flex-1 px-4 py-3 mb-1 animate-in fade-in duration-300">
+              <div className="h-full relative flex flex-col">
+                {/* Title */}
+                <div className="text-center mb-2">
+                  <h3 className="text-xs font-semibold text-white/90">
+                    {slides[currentSlide].title}
+                  </h3>
+                  <p className="text-[10px] text-white/50 mt-0.5">
+                    Entry point {currentSlide + 1}/{slides.length}
+                  </p>
+                </div>
+
+                {/* Card Display - Fixed Width Container */}
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="w-[280px]">
+                    {slides[currentSlide].component}
                   </div>
                 </div>
 
-                {/* Navigation */}
+                {/* Navigation Buttons */}
                 <button
                   onClick={prevSlide}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg flex items-center justify-center hover:opacity-70">
-                  <ChevronLeft size={20} className="text-white" />
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg flex items-center justify-center hover:opacity-70">
-                  <ChevronRight size={20} className="text-white" />
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors group"
+                  aria-label="Previous slide">
+                  <ChevronLeft
+                    size={16}
+                    className="text-white/60 group-hover:text-white transition-colors"
+                  />
                 </button>
 
-                {/* Dots */}
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-2">
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors group"
+                  aria-label="Next slide">
+                  <ChevronRight
+                    size={16}
+                    className="text-white/60 group-hover:text-white transition-colors"
+                  />
+                </button>
+
+                {/* Dots Indicator */}
+                <div className="flex justify-center gap-1.5 mt-2">
                   {slides.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentSlide(index)}
-                      className={`h-2 rounded-full transition-all ${
+                      className={`h-1.5 rounded-full transition-all ${
                         index === currentSlide
-                          ? "bg-white w-6"
-                          : "bg-white/30 hover:bg-white/50 w-2"
+                          ? "bg-white w-4"
+                          : "bg-white/30 hover:bg-white/50 w-1.5"
                       }`}
+                      aria-label={`Go to slide ${index + 1}`}
                     />
                   ))}
                 </div>
@@ -162,60 +162,71 @@ export default function FloatingActionButton() {
             </div>
           )}
 
-          {/* --------------------------
-                BOTTOM ROW ICONS
-          --------------------------- */}
-          <div className="flex items-center justify-between gap-2 h-[52px]">
-            {/* LOCK BUTTON */}
+          {/* Bottom Action Bar */}
+          <div className="flex items-center justify-between gap-2 h-[56px] px-1">
+            {/* Lock/Expand Button */}
             {(isExpanded || isLocked) && (
               <button
                 onClick={toggleLock}
-                className="w-12 h-12 flex items-center justify-center">
+                className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group"
+                aria-label={isLocked ? "Collapse" : "Expand"}>
                 <ChevronUp
-                  size={24}
-                  className={`text-white transition-all hover:opacity-70 ${
+                  size={20}
+                  className={`text-white/70 group-hover:text-white transition-all ${
                     isLocked ? "rotate-180" : ""
                   }`}
                 />
               </button>
             )}
 
-            <div className="flex flex-1 items-center justify-end">
-              {/* RATING */}
+            <div className="flex flex-1 items-center justify-end gap-1">
+              {/* Rating Stars */}
               {isAnimationDone && isLiked && (
-                <div className="flex items-center gap-1 px-2 animate-in slide-in-from-right duration-200">
+                <div className="flex items-center gap-0.5 px-2 animate-in slide-in-from-right duration-200">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       onClick={() => handleRating(star)}
                       onMouseEnter={() => setHoveredRating(star)}
                       onMouseLeave={() => setHoveredRating(0)}
-                      className="transition-transform hover:scale-110">
+                      className="transition-transform hover:scale-110"
+                      aria-label={`Rate ${star} stars`}>
                       <Star
-                        size={20}
-                        className={
+                        size={18}
+                        className={`${
                           star <= (hoveredRating || rating)
                             ? "fill-white text-white"
                             : "text-white/40"
-                        }
+                        } transition-colors`}
                       />
                     </button>
                   ))}
                 </div>
               )}
 
-              {/* LIKE BUTTON */}
-              {isAnimationDone && (isExpanded || isLocked) && !isLiked && (
+              {/* Like Button */}
+              {isAnimationDone && (isExpanded || isLocked) && (
                 <button
                   onClick={handleLike}
-                  className="w-12 h-12 flex items-center justify-center">
-                  <ThumbsUp size={24} className="text-white hover:opacity-70" />
+                  className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group"
+                  aria-label="Like">
+                  <ThumbsUp
+                    size={20}
+                    className={`text-white/70 group-hover:text-white transition-colors ${
+                      isLiked ? "fill-white" : ""
+                    }`}
+                  />
                 </button>
               )}
 
-              {/* ALWAYS SHOW INFO ICON */}
-              <button className="w-12 h-12 flex items-center justify-center">
-                <Info size={24} className="text-white hover:opacity-70" />
+              {/* Settings Button */}
+              <button
+                className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group"
+                aria-label="Settings">
+                <Wrench
+                  size={20}
+                  className="text-white/70 group-hover:text-white transition-colors"
+                />
               </button>
             </div>
           </div>
