@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useLayoutEffect, useRef } from "react"
 import {
   ThumbsUp,
   Star,
@@ -15,15 +15,20 @@ import {
 } from "./EntryPointCard"
 
 export default function FloatingActionButton() {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [isLocked, setIsLocked] = useState(false)
+  const [isToolbarOpen, setIsToolbarOpen] = useState(false)
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
+
+  // State to store the dynamic dimensions of the content
+  const [contentHeight, setContentHeight] = useState(0)
+  const [contentWidth, setContentWidth] = useState(0)
+
   const [isLiked, setIsLiked] = useState(false)
   const [rating, setRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [isAnimationDone, setIsAnimationDone] = useState(false)
 
   const containerRef = useRef(null)
+  const contentRef = useRef(null)
 
   const slides = [
     { title: "Google Search", component: <GoogleSearchCard /> },
@@ -31,167 +36,156 @@ export default function FloatingActionButton() {
     { title: "Facebook Ad", component: <FacebookAdCard /> },
   ]
 
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-
-    const handleEnd = (e) => {
-      if (e.propertyName === "width" || e.propertyName === "height") {
-        setIsAnimationDone(true)
-      }
+  useLayoutEffect(() => {
+    if (isPanelOpen && contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight)
+      setContentWidth(contentRef.current.scrollWidth)
     }
-
-    el.addEventListener("transitionend", handleEnd)
-    return () => el.removeEventListener("transitionend", handleEnd)
-  }, [])
-
-  useEffect(() => {
-    if (isExpanded || isLocked) {
-      setIsAnimationDone(false)
-    }
-  }, [isExpanded, isLocked])
+  }, [isPanelOpen, currentSlide])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        isLocked &&
         containerRef.current &&
         !containerRef.current.contains(event.target)
       ) {
-        setIsLocked(false)
-        setIsExpanded(false)
+        setIsPanelOpen(false)
+        setIsToolbarOpen(false)
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [isLocked])
+  }, [])
 
-  const handleLike = () => {
-    setIsLiked(!isLiked)
+  const handleLike = () => setIsLiked(!isLiked)
+  const handleRating = (value) => setRating(value)
+
+  const toggleToolbar = () => {
+    if (isToolbarOpen) {
+      setIsToolbarOpen(false)
+      setIsPanelOpen(false)
+    } else {
+      setIsToolbarOpen(true)
+    }
   }
 
-  const handleRating = (value) => {
-    setRating(value)
-    console.log("Rating set:", value)
-  }
+  const togglePanel = () => setIsPanelOpen(!isPanelOpen)
 
-  const toggleLock = () => {
-    setIsLocked(!isLocked)
-    if (!isLocked) setIsExpanded(true)
-  }
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length)
-  }
-
-  const prevSlide = () => {
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length)
+  const prevSlide = () =>
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
-  }
+
+  // Determine if tools should be visible (Toolbar open OR Panel open)
+  const isExpanded = isToolbarOpen || isPanelOpen
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
       <div
         ref={containerRef}
-        onMouseEnter={() => !isLocked && setIsExpanded(true)}
-        onMouseLeave={() => !isLocked && setIsExpanded(false)}
-        className="bg-zinc-900/95 dark:bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl transition-all duration-300 ease-out w-auto"
+        className="bg-zinc-900/95 dark:bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl transition-all duration-300 ease-out overflow-hidden flex flex-col justify-end"
         style={{
-          height: isLocked ? "240px" : "56px",
+          height: isPanelOpen ? `${contentHeight + 56}px` : "56px",
+          width: isPanelOpen
+            ? `${contentWidth}px`
+            : isToolbarOpen
+            ? "auto"
+            : "56px",
         }}>
-        <div className="h-full flex flex-col justify-end overflow-hidden">
-          {/* Carousel Section (Locked Mode) */}
-          {isLocked && isAnimationDone && (
-            <div className="flex-1 px-4 py-3 mb-1 animate-in fade-in duration-300">
-              <div className="h-full relative flex flex-col">
-                {/* Title */}
-                <div className="text-center mb-2">
-                  <h3 className="text-xs font-semibold text-white/90">
+        {/* === CAROUSEL SECTION === */}
+        <div
+          className={`transition-opacity duration-300 flex flex-col ${
+            isPanelOpen
+              ? "opacity-100 delay-100"
+              : "opacity-0 pointer-events-none"
+          }`}>
+          {isPanelOpen && (
+            <div ref={contentRef} className="flex flex-col w-max">
+              {/* 1. Card Area */}
+              <div className="flex items-center justify-center p-4 pt-5">
+                {slides[currentSlide].component}
+              </div>
+
+              {/* 2. Bottom Controls Row */}
+              <div className="px-4 pb-4 flex items-center justify-between gap-4 w-full">
+                <button
+                  onClick={prevSlide}
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-white/60 hover:text-white shrink-0">
+                  <ChevronLeft size={16} />
+                </button>
+
+                <div className="flex-1 flex flex-col items-center min-w-0">
+                  <h3 className="text-xs font-medium text-white/90 mb-1.5 whitespace-nowrap">
                     {slides[currentSlide].title}
                   </h3>
-                  <p className="text-[10px] text-white/50 mt-0.5">
-                    Entry point {currentSlide + 1}/{slides.length}
-                  </p>
-                </div>
-
-                {/* Card Display - Fixed Width Container */}
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="w-[280px]">
-                    {slides[currentSlide].component}
+                  <div className="flex gap-1.5">
+                    {slides.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`h-1 rounded-full transition-all duration-300 ${
+                          index === currentSlide
+                            ? "bg-white w-4"
+                            : "bg-white/20 w-1"
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
 
-                {/* Navigation Buttons */}
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors group"
-                  aria-label="Previous slide">
-                  <ChevronLeft
-                    size={16}
-                    className="text-white/60 group-hover:text-white transition-colors"
-                  />
-                </button>
-
                 <button
                   onClick={nextSlide}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors group"
-                  aria-label="Next slide">
-                  <ChevronRight
-                    size={16}
-                    className="text-white/60 group-hover:text-white transition-colors"
-                  />
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-white/60 hover:text-white shrink-0">
+                  <ChevronRight size={16} />
                 </button>
-
-                {/* Dots Indicator */}
-                <div className="flex justify-center gap-1.5 mt-2">
-                  {slides.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`h-1.5 rounded-full transition-all ${
-                        index === currentSlide
-                          ? "bg-white w-4"
-                          : "bg-white/30 hover:bg-white/50 w-1.5"
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
               </div>
             </div>
           )}
+        </div>
 
-          {/* Bottom Action Bar */}
-          <div className="flex items-center justify-between gap-2 h-[56px] px-1">
-            {/* Lock/Expand Button */}
-            {(isExpanded || isLocked) && (
-              <button
-                onClick={toggleLock}
-                className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group"
-                aria-label={isLocked ? "Collapse" : "Expand"}>
-                <ChevronUp
-                  size={20}
-                  className={`text-white/70 group-hover:text-white transition-all ${
-                    isLocked ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            )}
+        {/* === TOOLBAR SECTION === */}
+        {/* justify-between ensures separation between Left (Chevron) and Right (Tools) */}
+        <div className="h-[56px] flex items-center justify-between px-1 shrink-0 border-t border-white/0 relative z-20 w-full">
+          {isPanelOpen && (
+            <div className="absolute top-0 left-4 right-4 h-px bg-white/5" />
+          )}
 
-            <div className="flex flex-1 items-center justify-end gap-1">
-              {/* Rating Stars */}
-              {isAnimationDone && isLiked && (
-                <div className="flex items-center gap-0.5 px-2 animate-in slide-in-from-right duration-200">
+          {/* --- LEFT GROUP: Chevron --- */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ${
+              isExpanded ? "w-12 opacity-100" : "w-0 opacity-0"
+            }`}>
+            <button
+              onClick={togglePanel}
+              className={`w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group ${
+                isPanelOpen ? "bg-white/10" : ""
+              }`}>
+              <ChevronUp
+                size={20}
+                className={`text-white/70 group-hover:text-white transition-all duration-300 ${
+                  isPanelOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* --- RIGHT GROUP: Stars, Like, Wrench --- */}
+          <div className="flex items-center">
+            {/* Animated Wrapper for Stars & Like */}
+            <div
+              className={`flex items-center overflow-hidden transition-all duration-300 ${
+                isExpanded ? "w-auto opacity-100 mr-1" : "w-0 opacity-0"
+              }`}>
+              {/* Stars */}
+              {isLiked && (
+                <div className="flex items-center gap-0.5 px-1 animate-in fade-in zoom-in duration-200">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       onClick={() => handleRating(star)}
                       onMouseEnter={() => setHoveredRating(star)}
                       onMouseLeave={() => setHoveredRating(0)}
-                      className="transition-transform hover:scale-110"
-                      aria-label={`Rate ${star} stars`}>
+                      className="p-1 hover:scale-110 transition-transform">
                       <Star
-                        size={18}
+                        size={16}
                         className={`${
                           star <= (hoveredRating || rating)
                             ? "fill-white text-white"
@@ -204,30 +198,29 @@ export default function FloatingActionButton() {
               )}
 
               {/* Like Button */}
-              {isAnimationDone && (isExpanded || isLocked) && (
-                <button
-                  onClick={handleLike}
-                  className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group"
-                  aria-label="Like">
-                  <ThumbsUp
-                    size={20}
-                    className={`text-white/70 group-hover:text-white transition-colors ${
-                      isLiked ? "fill-white" : ""
-                    }`}
-                  />
-                </button>
-              )}
-
-              {/* Settings Button */}
               <button
-                className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group"
-                aria-label="Settings">
-                <Wrench
+                onClick={handleLike}
+                className="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors group">
+                <ThumbsUp
                   size={20}
-                  className="text-white/70 group-hover:text-white transition-colors"
+                  className={`text-white/70 group-hover:text-white transition-colors ${
+                    isLiked ? "fill-white text-white" : ""
+                  }`}
                 />
               </button>
             </div>
+
+            {/* Wrench (Always visible, rightmost) */}
+            <button
+              onClick={toggleToolbar}
+              className={`w-12 h-12 flex items-center justify-center rounded-lg transition-all duration-300 group z-10 hover:bg-white/10 ${
+                isToolbarOpen ? "bg-white/10" : ""
+              }`}>
+              <Wrench
+                size={20}
+                className="text-white/70 group-hover:text-white transition-colors"
+              />
+            </button>
           </div>
         </div>
       </div>
