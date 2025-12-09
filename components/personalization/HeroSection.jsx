@@ -1,16 +1,28 @@
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Zap, Star, Users, Calendar, TrendingUp } from 'lucide-react';
+import { useState } from "react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  Star,
+  Users,
+  Calendar,
+  TrendingUp,
+} from "lucide-react"
 
 // EV Hero Section
 export function EVHero() {
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 relative overflow-hidden">
+    <div className="w-full h-screen bg-linear-to-br from-cyan-500 via-blue-600 to-indigo-700 relative overflow-hidden">
       {/* Neon Grid Background */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'linear-gradient(rgba(0, 255, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.3) 1px, transparent 1px)',
-          backgroundSize: '50px 50px'
-        }} />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0, 255, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.3) 1px, transparent 1px)",
+            backgroundSize: "50px 50px",
+          }}
+        />
       </div>
 
       {/* Content */}
@@ -19,7 +31,9 @@ export function EVHero() {
         <div className="max-w-2xl">
           <div className="flex items-center gap-3 mb-4">
             <Zap size={48} className="text-cyan-300" />
-            <span className="text-cyan-300 text-xl font-medium">Electric Vehicles</span>
+            <span className="text-cyan-300 text-xl font-medium">
+              Electric Vehicles
+            </span>
           </div>
           <h1 className="text-7xl font-bold text-white mb-4 leading-tight">
             Drive the Future Today
@@ -32,12 +46,16 @@ export function EVHero() {
         {/* Cars Section - Bottom */}
         <div className="flex items-end justify-center gap-8 pb-12">
           {/* Neon glow lines */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60" />
-          <div className="absolute bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-300 to-transparent opacity-40" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-cyan-400 to-transparent opacity-60" />
+          <div className="absolute bottom-2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-cyan-300 to-transparent opacity-40" />
 
-          {['🚗', '🚙', '🚕'].map((car, idx) => (
-            <div key={idx} className="relative transform hover:scale-110 transition-transform duration-300">
-              <div className="text-9xl drop-shadow-2xl filter brightness-110">{car}</div>
+          {["🚗", "🚙", "🚕"].map((car, idx) => (
+            <div
+              key={idx}
+              className="relative transform hover:scale-110 transition-transform duration-300">
+              <div className="text-9xl drop-shadow-2xl filter brightness-110">
+                {car}
+              </div>
               {/* Glow effect */}
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-32 h-32 bg-cyan-400/40 rounded-full blur-3xl" />
             </div>
@@ -57,17 +75,17 @@ export function EVHero() {
         Browse Electric Fleet
       </button>
     </div>
-  );
+  )
 }
 
 // Luxury Hero Section
 export function LuxuryHero() {
-  const [carouselRotation, setCarouselRotation] = useState(0);
-  const cars = ['🏎️', '🚗', '🚙', '🚕'];
+  const [carouselRotation, setCarouselRotation] = useState(0)
+  const cars = ["🏎️", "🚗", "🚙", "🚕"]
 
   const rotateCarousel = (direction) => {
-    setCarouselRotation((prev) => prev + (direction === 'left' ? -90 : 90));
-  };
+    setCarouselRotation((prev) => prev + (direction === "left" ? -90 : 90))
+  }
 
   return (
     <div className="w-full h-screen bg-gradient-to-br from-amber-500 via-orange-600 to-red-700 relative overflow-hidden">
@@ -80,7 +98,9 @@ export function LuxuryHero() {
         <div className="max-w-xl">
           <div className="flex items-center gap-3 mb-6">
             <Star size={40} className="text-amber-300" />
-            <span className="text-amber-300 text-lg font-medium tracking-wider">LUXURY COLLECTION</span>
+            <span className="text-amber-300 text-lg font-medium tracking-wider">
+              LUXURY COLLECTION
+            </span>
           </div>
           <h1 className="text-7xl font-bold text-white mb-6 leading-tight">
             Premium Cars for Premium Journeys
@@ -95,44 +115,42 @@ export function LuxuryHero() {
 
         {/* Right - 3D Carousel */}
         <div className="relative w-1/2 h-96">
-          <div className="relative w-full h-full" style={{ perspective: '1000px' }}>
+          <div
+            className="relative w-full h-full"
+            style={{ perspective: "1000px" }}>
             <div
               className="absolute inset-0 transition-transform duration-700"
               style={{
-                transformStyle: 'preserve-3d',
-                transform: `rotateY(${carouselRotation}deg)`
-              }}
-            >
+                transformStyle: "preserve-3d",
+                transform: `rotateY(${carouselRotation}deg)`,
+              }}>
               {cars.map((car, idx) => {
-                const angle = (360 / cars.length) * idx;
+                const angle = (360 / cars.length) * idx
                 return (
                   <div
                     key={idx}
                     className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                     style={{
                       transform: `rotateY(${angle}deg) translateZ(300px)`,
-                    }}
-                  >
+                    }}>
                     <div className="text-8xl drop-shadow-2xl transform hover:scale-110 transition-transform">
                       {car}
                     </div>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
 
           {/* Carousel Controls */}
           <button
-            onClick={() => rotateCarousel('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-          >
+            onClick={() => rotateCarousel("left")}
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
             <ChevronLeft size={20} />
           </button>
           <button
-            onClick={() => rotateCarousel('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-          >
+            onClick={() => rotateCarousel("right")}
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
             <ChevronRight size={20} />
           </button>
         </div>
@@ -143,12 +161,12 @@ export function LuxuryHero() {
         Explore Luxury Collection
       </button>
     </div>
-  );
+  )
 }
 
 // Budget Hero Section
 export function BudgetHero() {
-  const cars = ['🚗', '🚙', '🚕', '🚐', '🚗', '🚙', '🚕', '🚐'];
+  const cars = ["🚗", "🚙", "🚕", "🚐", "🚗", "🚙", "🚕", "🚐"]
 
   return (
     <div className="w-full h-screen bg-gradient-to-br from-green-500 via-emerald-600 to-teal-700 relative overflow-hidden">
@@ -158,7 +176,9 @@ export function BudgetHero() {
           key={i}
           className="absolute w-4 h-4 rounded-full opacity-30 animate-pulse"
           style={{
-            backgroundColor: ['#fbbf24', '#34d399', '#60a5fa', '#f472b6'][i % 4],
+            backgroundColor: ["#fbbf24", "#34d399", "#60a5fa", "#f472b6"][
+              i % 4
+            ],
             top: `${Math.random() * 100}%`,
             left: `${Math.random() * 100}%`,
             animationDelay: `${Math.random() * 2}s`,
@@ -171,7 +191,9 @@ export function BudgetHero() {
         <div className="max-w-2xl mb-12">
           <div className="flex items-center gap-3 mb-4">
             <TrendingUp size={40} className="text-green-300" />
-            <span className="text-green-300 text-lg font-semibold">BEST VALUE</span>
+            <span className="text-green-300 text-lg font-semibold">
+              BEST VALUE
+            </span>
           </div>
           <h1 className="text-7xl font-bold text-white mb-4 leading-tight">
             Affordable Rides, No Compromise
@@ -182,7 +204,9 @@ export function BudgetHero() {
         </div>
 
         {/* Cars Grid - Two Rows */}
-        <div className="space-y-8 max-w-5xl mx-auto" style={{ perspective: '1200px' }}>
+        <div
+          className="space-y-8 max-w-5xl mx-auto"
+          style={{ perspective: "1200px" }}>
           {/* Front Row */}
           <div className="flex justify-center gap-6">
             {cars.slice(0, 4).map((car, idx) => (
@@ -191,8 +215,7 @@ export function BudgetHero() {
                 className="relative transform hover:scale-110 transition-transform"
                 style={{
                   transform: `translateZ(${50 - idx * 10}px)`,
-                }}
-              >
+                }}>
                 <div className="text-7xl drop-shadow-xl">{car}</div>
                 {/* Price tag */}
                 <div className="absolute -top-4 -right-4 bg-yellow-400 text-zinc-900 px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
@@ -201,7 +224,7 @@ export function BudgetHero() {
               </div>
             ))}
           </div>
-          
+
           {/* Back Row */}
           <div className="flex justify-center gap-6 opacity-70">
             {cars.slice(4).map((car, idx) => (
@@ -210,8 +233,7 @@ export function BudgetHero() {
                 className="relative transform hover:scale-110 transition-transform"
                 style={{
                   transform: `translateZ(${-50 - idx * 10}px) scale(0.85)`,
-                }}
-              >
+                }}>
                 <div className="text-6xl drop-shadow-xl">{car}</div>
               </div>
             ))}
@@ -224,7 +246,7 @@ export function BudgetHero() {
         View Budget-Friendly Cars
       </button>
     </div>
-  );
+  )
 }
 
 // Family Hero Section
@@ -242,7 +264,9 @@ export function FamilyHero() {
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Users size={48} className="text-pink-300" />
-            <span className="text-pink-300 text-xl font-medium">FAMILY FRIENDLY</span>
+            <span className="text-pink-300 text-xl font-medium">
+              FAMILY FRIENDLY
+            </span>
           </div>
           <h1 className="text-7xl font-bold text-white mb-4 leading-tight">
             Spacious Cars for Your Whole Crew
@@ -292,7 +316,7 @@ export function FamilyHero() {
         Find Family Vehicles
       </button>
     </div>
-  );
+  )
 }
 
 // Latest Hero Section
@@ -318,12 +342,16 @@ export function LatestHero() {
             <div className="text-purple-200 text-sm">Latest Model</div>
           </div>
 
-          <div className="absolute top-1/3 right-16 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 animate-bounce" style={{ animationDelay: '0.5s' }}>
+          <div
+            className="absolute top-1/3 right-16 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 animate-bounce"
+            style={{ animationDelay: "0.5s" }}>
             <div className="text-white text-xl font-bold">450 HP</div>
             <div className="text-purple-200 text-sm">Raw Power</div>
           </div>
 
-          <div className="absolute bottom-1/4 left-16 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 animate-bounce" style={{ animationDelay: '1s' }}>
+          <div
+            className="absolute bottom-1/4 left-16 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 animate-bounce"
+            style={{ animationDelay: "1s" }}>
             <div className="text-white text-xl font-bold">Smart AI</div>
             <div className="text-purple-200 text-sm">Driver Assist</div>
           </div>
@@ -349,25 +377,25 @@ export function LatestHero() {
         See Latest Models
       </button>
     </div>
-  );
+  )
 }
 
 // Demo Component - Choose which one to display
 export default function CategoryHeroDemo() {
-  const [activeHero, setActiveHero] = useState('ev');
+  const [activeHero, setActiveHero] = useState("ev")
 
   const heroes = {
     ev: <EVHero />,
     luxury: <LuxuryHero />,
     budget: <BudgetHero />,
     family: <FamilyHero />,
-    latest: <LatestHero />
-  };
+    latest: <LatestHero />,
+  }
 
   return (
     <div className="w-full h-screen relative">
       {heroes[activeHero]}
-      
+
       {/* Demo Selector - Remove this in production */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-black/50 backdrop-blur-md p-2 rounded-full">
         {Object.keys(heroes).map((key) => (
@@ -376,14 +404,13 @@ export default function CategoryHeroDemo() {
             onClick={() => setActiveHero(key)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all capitalize ${
               activeHero === key
-                ? 'bg-white text-black'
-                : 'bg-white/10 text-white hover:bg-white/20'
-            }`}
-          >
+                ? "bg-white text-black"
+                : "bg-white/10 text-white hover:bg-white/20"
+            }`}>
             {key}
           </button>
         ))}
       </div>
     </div>
-  );
+  )
 }

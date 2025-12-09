@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import Header from "@/components/Header"
+import { useState, useEffect } from "react"
 import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,88 +14,186 @@ import {
   EyeOff,
   Plus,
   Trash2,
+  Edit,
+  Check,
+  X,
 } from "lucide-react"
+import {
+  getAllTests,
+  saveTestConfig,
+  deleteTest,
+} from "@/lib/firebase/abTesting"
+import {
+  getAllRules,
+  saveRule,
+  deleteRule,
+} from "@/lib/firebase/personalization"
+import { getPortfolioStats } from "@/lib/firebase/likeRating"
 
 export default function CMSPage() {
   const [activeTab, setActiveTab] = useState("ab-testing")
-  const [isPublicView, setIsPublicView] = useState(true)
+  const [isPublicView, setIsPublicView] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
 
   // A/B Testing State
-  const [abTests, setAbTests] = useState([
-    {
-      id: 1,
-      name: "Hero Section CTA",
-      status: "active",
-      variants: ["Original", "Variant A"],
-      traffic: 50,
-    },
-    {
-      id: 2,
-      name: "Pricing Display",
-      status: "draft",
-      variants: ["Original", "Variant B"],
-      traffic: 50,
-    },
-  ])
+  const [abTests, setAbTests] = useState([])
+  const [editingTest, setEditingTest] = useState(null)
 
   // Personalization State
-  const [personalizationRules, setPersonalizationRules] = useState([
-    {
-      id: 1,
-      name: "First Time Visitors",
-      condition: "visits = 1",
-      action: "Show welcome popup",
-      enabled: true,
-    },
-    {
-      id: 2,
-      name: "Returning Users",
-      condition: "visits > 3",
-      action: "Show loyalty discount",
-      enabled: false,
-    },
-  ])
+  const [personalizationRules, setPersonalizationRules] = useState([])
+  const [editingRule, setEditingRule] = useState(null)
 
-  const handleSave = () => {
-    // TODO: Implement Firebase save
-    console.log("Saving configurations...")
-    alert("Configuration saved successfully!")
+  // Analytics State
+  const [stats, setStats] = useState({
+    totalLikes: 0,
+    totalRatings: 0,
+    averageRating: 0,
+    totalVisits: 0,
+  })
+
+  // Load data on mount
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    setLoading(true)
+    try {
+      const [tests, rules, portfolioStats] = await Promise.all([
+        getAllTests(),
+        getAllRules(),
+        getPortfolioStats(),
+      ])
+
+      setAbTests(tests)
+      setPersonalizationRules(rules)
+      setStats(portfolioStats)
+    } catch (error) {
+      console.error("Error loading data:", error)
+      alert("Error loading data. Please check your Firebase configuration.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveTest = async (test) => {
+    setSaving(true)
+    try {
+      const success = await saveTestConfig(test)
+      if (success) {
+        await loadData()
+        setEditingTest(null)
+        alert("Test saved successfully!")
+      } else {
+        alert("Error saving test. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error saving test:", error)
+      alert("Error saving test. Please try again.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteTest = async (id) => {
+    if (!confirm("Are you sure you want to delete this test?")) return
+
+    setSaving(true)
+    try {
+      const success = await deleteTest(id)
+      if (success) {
+        await loadData()
+        alert("Test deleted successfully!")
+      } else {
+        alert("Error deleting test. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error deleting test:", error)
+      alert("Error deleting test. Please try again.")
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleAddTest = () => {
     const newTest = {
-      id: Date.now(),
+      id: Date.now().toString(),
       name: "New Test",
       status: "draft",
       variants: ["Original", "Variant A"],
       traffic: 50,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
-    setAbTests([...abTests, newTest])
+    setEditingTest(newTest)
   }
 
-  const handleDeleteTest = (id) => {
-    setAbTests(abTests.filter((test) => test.id !== id))
+  const handleSaveRule = async (rule) => {
+    setSaving(true)
+    try {
+      const success = await saveRule(rule)
+      if (success) {
+        await loadData()
+        setEditingRule(null)
+        alert("Rule saved successfully!")
+      } else {
+        alert("Error saving rule. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error saving rule:", error)
+      alert("Error saving rule. Please try again.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteRule = async (id) => {
+    if (!confirm("Are you sure you want to delete this rule?")) return
+
+    setSaving(true)
+    try {
+      const success = await deleteRule(id)
+      if (success) {
+        await loadData()
+        alert("Rule deleted successfully!")
+      } else {
+        alert("Error deleting rule. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error deleting rule:", error)
+      alert("Error deleting rule. Please try again.")
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleAddRule = () => {
     const newRule = {
-      id: Date.now(),
+      id: Date.now().toString(),
       name: "New Rule",
-      condition: "",
-      action: "",
+      condition: "visits > 1",
+      action: "Show custom message",
       enabled: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
-    setPersonalizationRules([...personalizationRules, newRule])
+    setEditingRule(newRule)
   }
 
-  const handleDeleteRule = (id) => {
-    setPersonalizationRules(personalizationRules.filter((rule) => rule.id !== id))
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading CMS data...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
-      <Header />
-
       {/* Hero Section */}
       <section className="relative py-16 bg-linear-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white">
         <div className="container mx-auto px-4">
@@ -106,13 +203,18 @@ export default function CMSPage() {
               <h1 className="text-5xl font-bold">Content Management System</h1>
             </div>
             <p className="text-xl text-zinc-300 mb-6">
-              Configure A/B testing experiments and personalization rules for your portfolio
+              Configure A/B testing experiments and personalization rules for
+              your portfolio
             </p>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg">
-                <div className={`w-3 h-3 rounded-full ${isPublicView ? "bg-green-400" : "bg-yellow-400"} animate-pulse`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    isPublicView ? "bg-yellow-400" : "bg-green-400"
+                  } animate-pulse`}
+                />
                 <span className="text-sm font-medium">
-                  {isPublicView ? "Public Access Mode" : "Admin Mode"}
+                  {isPublicView ? "Public View Mode" : "Admin Mode"}
                 </span>
               </div>
               <Button
@@ -120,7 +222,7 @@ export default function CMSPage() {
                 size="sm"
                 onClick={() => setIsPublicView(!isPublicView)}
                 className="text-white border-white/20 hover:bg-white/10">
-                {isPublicView ? <EyeOff size={16} /> : <Eye size={16} />}
+                {isPublicView ? <Eye size={16} /> : <EyeOff size={16} />}
                 {isPublicView ? "Switch to Admin" : "Switch to Public"}
               </Button>
             </div>
@@ -170,11 +272,22 @@ export default function CMSPage() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-bold">Active Experiments</h2>
-                <Button onClick={handleAddTest} disabled={!isPublicView}>
+                <Button
+                  onClick={handleAddTest}
+                  disabled={isPublicView || saving}>
                   <Plus size={20} />
                   New Test
                 </Button>
               </div>
+
+              {editingTest && (
+                <TestEditor
+                  test={editingTest}
+                  onSave={handleSaveTest}
+                  onCancel={() => setEditingTest(null)}
+                  saving={saving}
+                />
+              )}
 
               <div className="grid gap-6">
                 {abTests.map((test) => (
@@ -182,7 +295,7 @@ export default function CMSPage() {
                     key={test.id}
                     className="border rounded-xl p-6 bg-zinc-50 dark:bg-zinc-900">
                     <div className="flex justify-between items-start mb-4">
-                      <div>
+                      <div className="flex-1">
                         <h3 className="text-xl font-bold mb-2">{test.name}</h3>
                         <div className="flex items-center gap-2">
                           <span
@@ -198,13 +311,24 @@ export default function CMSPage() {
                           </span>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteTest(test.id)}
-                        disabled={!isPublicView}>
-                        <Trash2 size={20} className="text-red-500" />
-                      </Button>
+                      {!isPublicView && (
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setEditingTest(test)}
+                            disabled={saving}>
+                            <Edit size={20} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteTest(test.id)}
+                            disabled={saving}>
+                            <Trash2 size={20} className="text-red-500" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
@@ -230,11 +354,22 @@ export default function CMSPage() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-bold">Personalization Rules</h2>
-                <Button onClick={handleAddRule} disabled={!isPublicView}>
+                <Button
+                  onClick={handleAddRule}
+                  disabled={isPublicView || saving}>
                   <Plus size={20} />
                   New Rule
                 </Button>
               </div>
+
+              {editingRule && (
+                <RuleEditor
+                  rule={editingRule}
+                  onSave={handleSaveRule}
+                  onCancel={() => setEditingRule(null)}
+                  saving={saving}
+                />
+              )}
 
               <div className="grid gap-6">
                 {personalizationRules.map((rule) => (
@@ -261,21 +396,36 @@ export default function CMSPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant={rule.enabled ? "default" : "outline"}
-                          size="sm"
-                          disabled={!isPublicView}>
-                          {rule.enabled ? "Enabled" : "Disabled"}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteRule(rule.id)}
-                          disabled={!isPublicView}>
-                          <Trash2 size={20} className="text-red-500" />
-                        </Button>
-                      </div>
+                      {!isPublicView && (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant={rule.enabled ? "default" : "outline"}
+                            size="sm"
+                            onClick={() =>
+                              handleSaveRule({
+                                ...rule,
+                                enabled: !rule.enabled,
+                              })
+                            }
+                            disabled={saving}>
+                            {rule.enabled ? "Enabled" : "Disabled"}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setEditingRule(rule)}
+                            disabled={saving}>
+                            <Edit size={20} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteRule(rule.id)}
+                            disabled={saving}>
+                            <Trash2 size={20} className="text-red-500" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -286,59 +436,202 @@ export default function CMSPage() {
           {/* Analytics Tab */}
           {activeTab === "analytics" && (
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold">Analytics Overview</h2>
+              <div className="flex justify-between items-center">
+                <h2 className="text-3xl font-bold">Analytics Overview</h2>
+                <Button onClick={loadData} variant="outline">
+                  <RefreshCw size={20} />
+                  Refresh
+                </Button>
+              </div>
 
               <div className="grid md:grid-cols-4 gap-6">
                 <div className="p-6 border rounded-xl bg-zinc-50 dark:bg-zinc-900">
-                  <div className="text-sm text-muted-foreground mb-2">Total Visits</div>
-                  <div className="text-3xl font-bold">--</div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Total Visits
+                  </div>
+                  <div className="text-3xl font-bold">{stats.totalVisits}</div>
                 </div>
                 <div className="p-6 border rounded-xl bg-zinc-50 dark:bg-zinc-900">
-                  <div className="text-sm text-muted-foreground mb-2">Total Likes</div>
-                  <div className="text-3xl font-bold">--</div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Total Likes
+                  </div>
+                  <div className="text-3xl font-bold">{stats.totalLikes}</div>
                 </div>
                 <div className="p-6 border rounded-xl bg-zinc-50 dark:bg-zinc-900">
-                  <div className="text-sm text-muted-foreground mb-2">Avg Rating</div>
-                  <div className="text-3xl font-bold">--</div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Avg Rating
+                  </div>
+                  <div className="text-3xl font-bold">
+                    {stats.averageRating.toFixed(1)}
+                  </div>
                 </div>
                 <div className="p-6 border rounded-xl bg-zinc-50 dark:bg-zinc-900">
-                  <div className="text-sm text-muted-foreground mb-2">Active Tests</div>
-                  <div className="text-3xl font-bold">{abTests.filter(t => t.status === 'active').length}</div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Active Tests
+                  </div>
+                  <div className="text-3xl font-bold">
+                    {abTests.filter((t) => t.status === "active").length}
+                  </div>
                 </div>
-              </div>
-
-              <div className="border rounded-xl p-8 text-center bg-zinc-50 dark:bg-zinc-900">
-                <BarChart size={48} className="mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-xl font-bold mb-2">Coming Soon</h3>
-                <p className="text-muted-foreground">
-                  Detailed analytics and reporting will be available once Firebase integration is complete.
-                </p>
               </div>
             </div>
           )}
-
-          {/* Action Bar */}
-          <div className="sticky bottom-0 mt-12 py-6 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-lg border-t">
-            <div className="flex justify-between items-center">
-              <div className="text-sm text-muted-foreground">
-                {isPublicView ? "Public users can view but not edit" : "Changes will be saved to Firebase"}
-              </div>
-              <div className="flex gap-4">
-                <Button variant="outline" disabled={!isPublicView}>
-                  <RefreshCw size={20} />
-                  Reset
-                </Button>
-                <Button onClick={handleSave} disabled={!isPublicView}>
-                  <Save size={20} />
-                  Save Changes
-                </Button>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
       <Footer />
+    </div>
+  )
+}
+
+// Test Editor Component
+function TestEditor({ test, onSave, onCancel, saving }) {
+  const [formData, setFormData] = useState(test)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSave(formData)
+  }
+
+  return (
+    <div className="border rounded-xl p-6 bg-blue-50 dark:bg-blue-950/20">
+      <h3 className="text-xl font-bold mb-4">
+        {test.id ? "Edit Test" : "New Test"}
+      </h3>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Test Name</label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">Status</label>
+          <select
+            value={formData.status}
+            onChange={(e) =>
+              setFormData({ ...formData, status: e.target.value })
+            }
+            className="w-full px-4 py-2 border rounded-lg">
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Traffic Split (%)
+          </label>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            value={formData.traffic}
+            onChange={(e) =>
+              setFormData({ ...formData, traffic: parseInt(e.target.value) })
+            }
+            className="w-full px-4 py-2 border rounded-lg"
+            required
+          />
+        </div>
+        <div className="flex gap-2">
+          <Button type="submit" disabled={saving}>
+            <Check size={20} />
+            Save
+          </Button>
+          <Button type="button" variant="outline" onClick={onCancel}>
+            <X size={20} />
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+// Rule Editor Component
+function RuleEditor({ rule, onSave, onCancel, saving }) {
+  const [formData, setFormData] = useState(rule)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onSave(formData)
+  }
+
+  return (
+    <div className="border rounded-xl p-6 bg-green-50 dark:bg-green-950/20">
+      <h3 className="text-xl font-bold mb-4">
+        {rule.id ? "Edit Rule" : "New Rule"}
+      </h3>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">Rule Name</label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-4 py-2 border rounded-lg"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">Condition</label>
+          <input
+            type="text"
+            value={formData.condition}
+            onChange={(e) =>
+              setFormData({ ...formData, condition: e.target.value })
+            }
+            placeholder="e.g., visits > 3"
+            className="w-full px-4 py-2 border rounded-lg"
+            required
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Examples: visits = 1, visits &gt; 3, visits &lt; 5
+          </p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">Action</label>
+          <input
+            type="text"
+            value={formData.action}
+            onChange={(e) =>
+              setFormData({ ...formData, action: e.target.value })
+            }
+            placeholder="e.g., Show welcome message"
+            className="w-full px-4 py-2 border rounded-lg"
+            required
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="enabled"
+            checked={formData.enabled}
+            onChange={(e) =>
+              setFormData({ ...formData, enabled: e.target.checked })
+            }
+            className="w-4 h-4"
+          />
+          <label htmlFor="enabled" className="text-sm font-medium">
+            Enable this rule
+          </label>
+        </div>
+        <div className="flex gap-2">
+          <Button type="submit" disabled={saving}>
+            <Check size={20} />
+            Save
+          </Button>
+          <Button type="button" variant="outline" onClick={onCancel}>
+            <X size={20} />
+            Cancel
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }
