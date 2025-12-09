@@ -1,19 +1,52 @@
-import { useState } from "react"
+"use client"
+import { useState, useEffect } from "react"
 import {
   ChevronLeft,
   ChevronRight,
   Zap,
-  Star,
   Users,
   Calendar,
   TrendingUp,
 } from "lucide-react"
 
+// Helper function to get cars by category from JSON data
+const getCarsByCategory = (cars, category, limit = 4) => {
+  if (!cars) return []
+  let side
+  switch (category.toLowerCase()) {
+    case "electric":
+      side = 3
+      break
+    case "luxury":
+      side = 5
+      break
+    case "budget":
+      side = 3
+      break
+    case "family":
+      side = 6
+      break
+    case "latest":
+      side = 5
+      break
+    default:
+      side = 5
+  }
+  return cars
+    .filter((car) => car.category.toLowerCase() === category.toLowerCase())
+    .slice(0, limit)
+    .map((car) => ({
+      name: car.car_name,
+      img: car.files[side].filename,
+    }))
+}
+
 // EV Hero Section
-export function EVHero() {
+function EVHero({ cars }) {
+  if (!cars || cars.length === 0) return null
+
   return (
     <div className="w-full h-screen bg-linear-to-br from-cyan-500 via-blue-600 to-indigo-700 relative overflow-hidden">
-      {/* Neon Grid Background */}
       <div className="absolute inset-0 opacity-20">
         <div
           className="absolute inset-0"
@@ -25,16 +58,8 @@ export function EVHero() {
         />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-between p-12">
-        {/* Title Section - Top Left */}
         <div className="max-w-2xl">
-          <div className="flex items-center gap-3 mb-4">
-            <Zap size={48} className="text-cyan-300" />
-            <span className="text-cyan-300 text-xl font-medium">
-              Electric Vehicles
-            </span>
-          </div>
           <h1 className="text-7xl font-bold text-white mb-4 leading-tight">
             Drive the Future Today
           </h1>
@@ -43,34 +68,29 @@ export function EVHero() {
           </p>
         </div>
 
-        {/* Cars Section - Bottom */}
         <div className="flex items-end justify-center gap-8 pb-12">
-          {/* Neon glow lines */}
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-transparent via-cyan-400 to-transparent opacity-60" />
           <div className="absolute bottom-2 left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-cyan-300 to-transparent opacity-40" />
 
-          {["🚗", "🚙", "🚕"].map((car, idx) => (
+          {cars.map((car, idx) => (
             <div
               key={idx}
-              className="relative transform hover:scale-110 transition-transform duration-300">
-              <div className="text-9xl drop-shadow-2xl filter brightness-110">
-                {car}
-              </div>
-              {/* Glow effect */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-32 h-32 bg-cyan-400/40 rounded-full blur-3xl" />
+              className="absolute top-[70%] -translate-y-1/2"
+              style={{
+                left: `${idx * 200}px`, // spacing between cars
+                zIndex: idx + 1,
+              }}>
+              <img
+                src={car.img}
+                alt={car.name}
+                // Added 'max-w-none' to prevent shrinking
+                className="w-[1000px] max-w-none h-auto pointer-events-none select-none"
+              />
             </div>
           ))}
-
-          {/* Charging station silhouette */}
-          <div className="absolute right-24 bottom-20 opacity-20">
-            <div className="w-16 h-32 bg-white/30 rounded-t-lg relative">
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 w-8 h-8 border-4 border-white/50 rounded" />
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* CTA Button */}
       <button className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 px-8 py-3 bg-white text-cyan-600 rounded-full font-semibold hover:bg-cyan-50 transition-colors shadow-xl">
         Browse Electric Fleet
       </button>
@@ -79,80 +99,47 @@ export function EVHero() {
 }
 
 // Luxury Hero Section
-export function LuxuryHero() {
-  const [carouselRotation, setCarouselRotation] = useState(0)
-  const cars = ["🏎️", "🚗", "🚙", "🚕"]
-
-  const rotateCarousel = (direction) => {
-    setCarouselRotation((prev) => prev + (direction === "left" ? -90 : 90))
-  }
+function LuxuryHero({ cars }) {
+  if (!cars || cars.length === 0) return null
 
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-amber-500 via-orange-600 to-red-700 relative overflow-hidden">
-      {/* Dark spotlight background */}
-      <div className="absolute inset-0 bg-zinc-950/60" />
-      <div className="absolute top-1/2 right-1/3 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl" />
+    <div className="w-full h-screen relative overflow-hidden">
+      {/* Dark overlay */}
+      <div className="absolute inset-0 " />
 
+      {/* Soft glow */}
+      <div className="absolute top-1/2 right-1/3 w-96 h-96 rounded-full blur-3xl" />
+
+      {/* Main content */}
       <div className="relative z-10 h-full flex items-center justify-between p-12">
-        {/* Left - Text */}
+        {/* Text */}
         <div className="max-w-xl">
-          <div className="flex items-center gap-3 mb-6">
-            <Star size={40} className="text-amber-300" />
-            <span className="text-amber-300 text-lg font-medium tracking-wider">
-              LUXURY COLLECTION
-            </span>
-          </div>
-          <h1 className="text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-7xl font-bold text-foreground mb-6 leading-tight">
             Premium Cars for Premium Journeys
           </h1>
-          <div className="relative inline-block">
-            <p className="text-2xl text-amber-100">
-              Indulge in comfort, performance, and prestige.
-            </p>
-            <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-400 to-transparent" />
-          </div>
+          <p className="text-2xl text-foreground/80">
+            Indulge in comfort, performance, and prestige.
+          </p>
         </div>
 
-        {/* Right - 3D Carousel */}
-        <div className="relative w-1/2 h-96">
-          <div
-            className="relative w-full h-full"
-            style={{ perspective: "1000px" }}>
+        {/* Cars layered using z-index */}
+        <div className="relative flex-1 h-full overflow-visible">
+          {cars.map((car, idx) => (
             <div
-              className="absolute inset-0 transition-transform duration-700"
+              key={idx}
+              className="absolute top-[70%] -translate-y-1/2"
               style={{
-                transformStyle: "preserve-3d",
-                transform: `rotateY(${carouselRotation}deg)`,
+                left: `${idx * 250}px`, // spacing between cars
+                zIndex: idx + 1,
               }}>
-              {cars.map((car, idx) => {
-                const angle = (360 / cars.length) * idx
-                return (
-                  <div
-                    key={idx}
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                    style={{
-                      transform: `rotateY(${angle}deg) translateZ(300px)`,
-                    }}>
-                    <div className="text-8xl drop-shadow-2xl transform hover:scale-110 transition-transform">
-                      {car}
-                    </div>
-                  </div>
-                )
-              })}
+              <img
+                src={car.img}
+                alt={car.name}
+                // Added 'max-w-none' to prevent shrinking
+                className="w-[1000px] max-w-none h-auto pointer-events-none select-none"
+              />
             </div>
-          </div>
-
-          {/* Carousel Controls */}
-          <button
-            onClick={() => rotateCarousel("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
-            <ChevronLeft size={20} />
-          </button>
-          <button
-            onClick={() => rotateCarousel("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
-            <ChevronRight size={20} />
-          </button>
+          ))}
         </div>
       </div>
 
@@ -165,12 +152,12 @@ export function LuxuryHero() {
 }
 
 // Budget Hero Section
-export function BudgetHero() {
-  const cars = ["🚗", "🚙", "🚕", "🚐", "🚗", "🚙", "🚕", "🚐"]
+function BudgetHero({ cars: initialCars }) {
+  if (!initialCars || initialCars.length === 0) return null
+  const cars = [...initialCars, ...initialCars]
 
   return (
     <div className="w-full h-screen bg-gradient-to-br from-green-500 via-emerald-600 to-teal-700 relative overflow-hidden">
-      {/* Cheerful confetti background */}
       {[...Array(20)].map((_, i) => (
         <div
           key={i}
@@ -187,7 +174,6 @@ export function BudgetHero() {
       ))}
 
       <div className="relative z-10 h-full p-12">
-        {/* Title - Top Left */}
         <div className="max-w-2xl mb-12">
           <div className="flex items-center gap-3 mb-4">
             <TrendingUp size={40} className="text-green-300" />
@@ -203,21 +189,20 @@ export function BudgetHero() {
           </div>
         </div>
 
-        {/* Cars Grid - Two Rows */}
         <div
           className="space-y-8 max-w-5xl mx-auto"
           style={{ perspective: "1200px" }}>
-          {/* Front Row */}
           <div className="flex justify-center gap-6">
             {cars.slice(0, 4).map((car, idx) => (
               <div
                 key={idx}
                 className="relative transform hover:scale-110 transition-transform"
-                style={{
-                  transform: `translateZ(${50 - idx * 10}px)`,
-                }}>
-                <div className="text-7xl drop-shadow-xl">{car}</div>
-                {/* Price tag */}
+                style={{ transform: `translateZ(${50 - idx * 10}px)` }}>
+                <img
+                  src={car.img}
+                  alt={car.name}
+                  className="w-40 h-auto drop-shadow-xl"
+                />
                 <div className="absolute -top-4 -right-4 bg-yellow-400 text-zinc-900 px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
                   ${30 + idx * 5}/day
                 </div>
@@ -225,7 +210,6 @@ export function BudgetHero() {
             ))}
           </div>
 
-          {/* Back Row */}
           <div className="flex justify-center gap-6 opacity-70">
             {cars.slice(4).map((car, idx) => (
               <div
@@ -234,14 +218,17 @@ export function BudgetHero() {
                 style={{
                   transform: `translateZ(${-50 - idx * 10}px) scale(0.85)`,
                 }}>
-                <div className="text-6xl drop-shadow-xl">{car}</div>
+                <img
+                  src={car.img}
+                  alt={car.name}
+                  className="w-32 h-auto drop-shadow-xl"
+                />
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* CTA Button */}
       <button className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 px-8 py-3 bg-white text-green-600 rounded-full font-semibold hover:bg-green-50 transition-colors shadow-xl">
         View Budget-Friendly Cars
       </button>
@@ -250,17 +237,18 @@ export function BudgetHero() {
 }
 
 // Family Hero Section
-export function FamilyHero() {
+function FamilyHero({ cars }) {
+  if (!cars || cars.length === 0) return null
+  const mainCar = cars[0]
+
   return (
     <div className="w-full h-screen bg-gradient-to-br from-purple-500 via-pink-600 to-rose-700 relative overflow-hidden">
-      {/* Soft rounded shapes background */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-20 w-64 h-64 bg-white rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center p-12">
-        {/* Title - Centered Top */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Users size={48} className="text-pink-300" />
@@ -278,14 +266,13 @@ export function FamilyHero() {
           </div>
         </div>
 
-        {/* Main Car with Accessories */}
         <div className="relative">
-          {/* Car */}
-          <div className="text-[200px] drop-shadow-2xl transform hover:scale-105 transition-transform">
-            🚐
-          </div>
+          <img
+            src={mainCar.img}
+            alt={mainCar.name}
+            className="w-[500px] h-auto drop-shadow-2xl transform hover:scale-105 transition-transform"
+          />
 
-          {/* Accessories around car */}
           <div className="absolute -left-32 top-1/4 opacity-40 transform hover:scale-110 transition-transform">
             <div className="text-6xl">🎒</div>
             <span className="text-white text-sm">Luggage</span>
@@ -299,7 +286,6 @@ export function FamilyHero() {
             <span className="text-white text-sm">Travel</span>
           </div>
 
-          {/* Seating Layout Diagram */}
           <div className="absolute -bottom-32 right-0 bg-white/10 backdrop-blur-md p-4 rounded-lg opacity-60">
             <div className="text-white text-sm mb-2">Seating: 7 passengers</div>
             <div className="grid grid-cols-3 gap-2">
@@ -311,7 +297,6 @@ export function FamilyHero() {
         </div>
       </div>
 
-      {/* CTA Button */}
       <button className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 px-8 py-3 bg-white text-pink-600 rounded-full font-semibold hover:bg-pink-50 transition-colors shadow-xl">
         Find Family Vehicles
       </button>
@@ -320,25 +305,27 @@ export function FamilyHero() {
 }
 
 // Latest Hero Section
-export function LatestHero() {
+function LatestHero({ cars }) {
+  if (!cars || cars.length === 0) return null
+  const mainCar = cars[0]
+
   return (
     <div className="w-full h-screen bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-700 relative overflow-hidden">
-      {/* Diagonal speed streak */}
       <div className="absolute top-0 right-0 w-full h-full">
         <div className="absolute top-1/2 right-0 w-[800px] h-2 bg-white/30 transform -translate-y-1/2 rotate-[-15deg] blur-sm" />
         <div className="absolute top-1/2 right-0 w-[600px] h-1 bg-white/50 transform -translate-y-1/2 rotate-[-15deg]" />
       </div>
 
       <div className="relative z-10 h-full flex items-center justify-between p-12">
-        {/* Right - Main Car */}
         <div className="relative flex-1 flex items-center justify-center">
-          <div className="text-[200px] drop-shadow-2xl transform hover:scale-105 transition-transform animate-pulse">
-            🏎️
-          </div>
+          <img
+            src={mainCar.img}
+            alt={mainCar.name}
+            className="w-[600px] h-auto drop-shadow-2xl transform hover:scale-105 transition-transform animate-pulse"
+          />
 
-          {/* Floating Info Cards */}
           <div className="absolute top-16 left-32 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 animate-bounce">
-            <div className="text-white text-2xl font-bold">2025</div>
+            <div className="text-white text-2xl font-bold">2026</div>
             <div className="text-purple-200 text-sm">Latest Model</div>
           </div>
 
@@ -357,7 +344,6 @@ export function LatestHero() {
           </div>
         </div>
 
-        {/* Left - Text (over gradient) */}
         <div className="absolute bottom-12 left-12 max-w-2xl">
           <p className="text-purple-300 text-lg font-medium mb-2 tracking-wide">
             Be the first to ride the newest releases.
@@ -372,7 +358,6 @@ export function LatestHero() {
         </div>
       </div>
 
-      {/* CTA Button */}
       <button className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 px-8 py-3 bg-white text-purple-600 rounded-full font-semibold hover:bg-purple-50 transition-colors shadow-xl">
         See Latest Models
       </button>
@@ -380,37 +365,56 @@ export function LatestHero() {
   )
 }
 
-// Demo Component - Choose which one to display
-export default function CategoryHeroDemo() {
-  const [activeHero, setActiveHero] = useState("ev")
+// Main HeroSection Component with category prop
+export default function HeroSection({ category = "luxury" }) {
+  const [carData, setCarData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-  const heroes = {
-    ev: <EVHero />,
-    luxury: <LuxuryHero />,
-    budget: <BudgetHero />,
-    family: <FamilyHero />,
-    latest: <LatestHero />,
+  useEffect(() => {
+    // Fetch car data from public folder
+    fetch("/db_cars.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setCarData(data)
+        setLoading(false)
+      })
+      .catch((error) => {
+        console.error("Error loading car data:", error)
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-zinc-950">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white text-xl">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
-  return (
-    <div className="w-full h-screen relative">
-      {heroes[activeHero]}
-
-      {/* Demo Selector - Remove this in production */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-black/50 backdrop-blur-md p-2 rounded-full">
-        {Object.keys(heroes).map((key) => (
-          <button
-            key={key}
-            onClick={() => setActiveHero(key)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all capitalize ${
-              activeHero === key
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            }`}>
-            {key}
-          </button>
-        ))}
+  if (!carData) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-zinc-950">
+        <p className="text-white text-xl">Failed to load car data</p>
       </div>
-    </div>
-  )
+    )
+  }
+
+  // Map category to hero component
+  const heroComponents = {
+    electric: <EVHero cars={getCarsByCategory(carData.cars, "Electric")} />,
+    luxury: <LuxuryHero cars={getCarsByCategory(carData.cars, "Luxury")} />,
+    budget: <BudgetHero cars={getCarsByCategory(carData.cars, "Budget")} />,
+    family: <FamilyHero cars={getCarsByCategory(carData.cars, "Family")} />,
+    latest: <LatestHero cars={getCarsByCategory(carData.cars, "Latest")} />,
+  }
+
+  // Get the selected hero or default to luxury
+  const selectedHero =
+    heroComponents[category.toLowerCase()] || heroComponents.luxury
+
+  return <div className="w-full h-screen relative">{selectedHero}</div>
 }

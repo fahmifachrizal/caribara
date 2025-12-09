@@ -1,12 +1,13 @@
 import Footer from "@/components/Footer"
-import HeroSection from "@/components/HeroSection"
+import HeroSection from "@/components/personalization/HeroSection" // Updated import
 import FeatureBlock from "@/components/FeatureBlock"
 import { CheckCircle2, Shield, Clock, Award } from "lucide-react"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
-      <HeroSection />
+      {/* Use the new HeroSection with category prop */}
+      <HeroSection category="electric" />
 
       {/* Feature Block 1 - Premium Fleet */}
       <FeatureBlock
@@ -56,7 +57,6 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Feature 1 */}
             <div className="bg-white dark:bg-zinc-950 p-8 rounded-xl hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle2 className="text-primary" size={32} />
@@ -68,7 +68,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Feature 2 */}
             <div className="bg-white dark:bg-zinc-950 p-8 rounded-xl hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <Shield className="text-primary" size={32} />
@@ -80,7 +79,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Feature 3 */}
             <div className="bg-white dark:bg-zinc-950 p-8 rounded-xl hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <Clock className="text-primary" size={32} />
@@ -92,7 +90,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Feature 4 */}
             <div className="bg-white dark:bg-zinc-950 p-8 rounded-xl hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <Award className="text-primary" size={32} />
@@ -115,7 +112,8 @@ export default function Home() {
               What Our Customers Say
             </h2>
             <p className="text-xl text-muted-foreground">
-              Don&apos;t just take our word for it—hear from our satisfied customers
+              Don&apos;t just take our word for it—hear from our satisfied
+              customers
             </p>
           </div>
 
