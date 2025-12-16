@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import Footer from "@/components/Footer"
+import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Check, ArrowRight } from "lucide-react"
 

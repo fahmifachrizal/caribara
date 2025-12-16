@@ -1,6 +1,7 @@
+// components/personalization/heroes/family.jsx
 import { Button } from "@/components/ui/button"
 import { Users } from "lucide-react"
-import Image from "next/image"
+import { CarImage } from "@/components/car-image"
 
 // Family Hero Section
 function FamilyHero({ cars }) {
@@ -33,13 +34,13 @@ function FamilyHero({ cars }) {
         </div>
 
         <div className="relative">
-          <Image
+          <CarImage
             src={mainCar.img}
             alt={mainCar.name}
             width={500}
-            height={300}
-            className="w-[500px] h-auto drop-shadow-2xl transform hover:scale-105 transition-transform"
+            className="drop-shadow-2xl transform hover:scale-105 transition-transform"
             priority
+            objectFit="contain"
           />
 
           <div className="absolute -left-32 top-1/4 opacity-40 transform hover:scale-110 transition-transform">

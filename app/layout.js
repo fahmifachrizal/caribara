@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import FloatingActionButton from "@/components/FloatingActionButton"
+import Header from "@/components/header";
+import FloatingActionButton from "@/components/floating-action-button"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

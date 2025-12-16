@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Footer from "@/components/Footer"
-import CarCard from "@/components/CarCard"
+import Footer from "@/components/footer"
+import CarCard from "@/components/car-card"
 import { Button } from "@/components/ui/button"
 import { Search, SlidersHorizontal } from "lucide-react"
 

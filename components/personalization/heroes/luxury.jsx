@@ -1,5 +1,6 @@
+// components/personalization/heroes/luxury.jsx
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
+import { CarImage } from "@/components/car-image"
 
 // Luxury Hero Section
 function LuxuryHero({ cars }) {
@@ -30,19 +31,18 @@ function LuxuryHero({ cars }) {
           {cars.map((car, idx) => (
             <div
               key={idx}
-              className="absolute top-[70%] -translate-y-1/2"
+              className="absolute top-[70%] -translate-y-1/2 transition-transform duration-300 hover:scale-105"
               style={{
                 left: `${idx * 250}px`,
                 zIndex: idx + 1,
               }}>
-              <Image
+              <CarImage
                 src={car.img}
                 alt={car.name}
                 width={1000}
-                height={600}
-                className="w-[1000px] max-w-none h-auto pointer-events-none select-none"
+                className="pointer-events-none select-none"
                 priority={idx === 0}
-                loading={idx === 0 ? "eager" : "lazy"}
+                objectFit="contain"
               />
             </div>
           ))}

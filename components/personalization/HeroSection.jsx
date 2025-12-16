@@ -1,5 +1,7 @@
-"use client"
-import { useState, useEffect } from "react"
+// components/personalization/HeroSection.jsx
+// Server Component - No "use client" directive
+import { promises as fs } from "fs"
+import path from "path"
 import {
   BudgetHero,
   ElectricHero,
@@ -40,53 +42,14 @@ const getCarsByCategory = (cars, category, limit = 4) => {
     }))
 }
 
-// Main HeroSection Component with category prop
-export default function HeroSection({ category = "luxury" }) {
-  const [carData, setCarData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+// Server Component - fetches data on the server
+export default async function HeroSection({ category = "luxury" }) {
+  // Read car data from file system (server-side only)
+  const filePath = path.join(process.cwd(), "public", "db_cars.json")
+  const fileContents = await fs.readFile(filePath, "utf8")
+  const carData = JSON.parse(fileContents)
 
-  useEffect(() => {
-    // Fetch car data from public folder
-    fetch("/db_cars.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load car data")
-        return res.json()
-      })
-      .then((data) => {
-        setCarData(data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error("Error loading car data:", err)
-        setError(err.message)
-        setLoading(false)
-      })
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center bg-zinc-950">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white text-xl">Loading your journey...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !carData) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center bg-zinc-950">
-        <div className="text-center max-w-md">
-          <p className="text-white text-xl mb-4">Unable to load car data</p>
-          <p className="text-zinc-400 text-sm">{error || "Please try again later"}</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Map category to hero component
+  // Map category to hero component with pre-fetched data
   const heroComponents = {
     electric: (
       <ElectricHero cars={getCarsByCategory(carData.cars, "Electric")} />

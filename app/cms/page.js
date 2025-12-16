@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Footer from "@/components/Footer"
+import Footer from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import {
   Settings,

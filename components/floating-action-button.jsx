@@ -12,7 +12,7 @@ import {
   FacebookAdCard,
   GoogleSearchCard,
   TwitterPostCard,
-} from "./EntryPointCard"
+} from "./entry-point-card"
 
 export default function FloatingActionButton() {
   const [isToolbarOpen, setIsToolbarOpen] = useState(false)

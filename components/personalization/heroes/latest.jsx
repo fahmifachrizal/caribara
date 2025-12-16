@@ -1,6 +1,7 @@
+// components/personalization/heroes/latest.jsx
 import { Button } from "@/components/ui/button"
 import { Calendar } from "lucide-react"
-import Image from "next/image"
+import { CarImage } from "@/components/car-image"
 
 // Latest Hero Section
 function LatestHero({ cars }) {
@@ -16,13 +17,13 @@ function LatestHero({ cars }) {
 
       <div className="relative z-10 h-full flex items-center justify-between p-12">
         <div className="relative flex-1 flex items-center justify-center">
-          <Image
+          <CarImage
             src={mainCar.img}
             alt={mainCar.name}
             width={600}
-            height={360}
-            className="w-[600px] h-auto drop-shadow-2xl transform hover:scale-105 transition-transform animate-pulse"
+            className="drop-shadow-2xl transform hover:scale-105 transition-transform animate-pulse"
             priority
+            objectFit="contain"
           />
 
           <div className="absolute top-16 left-32 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 animate-bounce">

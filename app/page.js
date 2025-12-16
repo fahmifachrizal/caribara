@@ -1,6 +1,6 @@
-import Footer from "@/components/Footer"
+import Footer from "@/components/footer"
 import HeroSection from "@/components/personalization/HeroSection" // Updated import
-import FeatureBlock from "@/components/FeatureBlock"
+import FeatureBlock from "@/components/feature-block"
 import { CheckCircle2, Shield, Clock, Award } from "lucide-react"
 
 export default function Home() {
