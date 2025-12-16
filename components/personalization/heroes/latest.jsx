@@ -19,7 +19,10 @@ function LatestHero({ cars }) {
           <Image
             src={mainCar.img}
             alt={mainCar.name}
+            width={600}
+            height={360}
             className="w-[600px] h-auto drop-shadow-2xl transform hover:scale-105 transition-transform animate-pulse"
+            priority
           />
 
           <div className="absolute top-16 left-32 bg-white/10 backdrop-blur-md px-6 py-3 rounded-lg border border-white/20 animate-bounce">
@@ -63,4 +66,4 @@ function LatestHero({ cars }) {
   )
 }
 
-export {LatestHero}
+export { LatestHero }

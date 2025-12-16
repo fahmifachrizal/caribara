@@ -51,7 +51,11 @@ function BudgetHero({ cars: initialCars }) {
                 <Image
                   src={car.img}
                   alt={car.name}
+                  width={160}
+                  height={120}
                   className="w-40 h-auto drop-shadow-xl"
+                  priority={idx === 0}
+                  loading={idx === 0 ? "eager" : "lazy"}
                 />
                 <div className="absolute -top-4 -right-4 bg-yellow-400 text-zinc-900 px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
                   ${30 + idx * 5}/day
@@ -71,7 +75,10 @@ function BudgetHero({ cars: initialCars }) {
                 <Image
                   src={car.img}
                   alt={car.name}
+                  width={128}
+                  height={96}
                   className="w-32 h-auto drop-shadow-xl"
+                  loading="lazy"
                 />
               </div>
             ))}

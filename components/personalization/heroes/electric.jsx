@@ -35,9 +35,9 @@ function ElectricHero({ cars }) {
           {cars.map((car, idx) => (
             <div
               key={idx}
-              className="absolute top-[70%] -translate-y-1/2"
+              className="absolute -bottom-20"
               style={{
-                left: `${idx * 200}px`, // spacing between cars
+                left: `${idx * 200}px`,
                 zIndex: idx + 1,
               }}>
               <Image
@@ -45,11 +45,22 @@ function ElectricHero({ cars }) {
                 alt={car.name}
                 width={1000}
                 height={600}
-                // Added 'max-w-none' to prevent shrinking
                 className="w-[1000px] max-w-none h-auto pointer-events-none select-none"
+                priority={idx === 0}
+                loading={idx === 0 ? "eager" : "lazy"}
               />
             </div>
           ))}
+          <div className="absolute bottom-0 right-20">
+            <Image
+              src="https://i.ibb.co.com/CXFkbJC/charging-station.png"
+              alt="Charging Station"
+              width={250}
+              height={100}
+              className="w-[250px] h-auto mx-auto drop-shadow-2xl"
+              priority
+            />
+          </div>
         </div>
       </div>
 

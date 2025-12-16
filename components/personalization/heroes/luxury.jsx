@@ -8,7 +8,7 @@ function LuxuryHero({ cars }) {
   return (
     <div className="w-full h-screen relative overflow-hidden">
       {/* Dark overlay */}
-      <div className="absolute inset-0 " />
+      <div className="absolute inset-0" />
 
       {/* Soft glow */}
       <div className="absolute top-1/2 right-1/3 w-96 h-96 rounded-full blur-3xl" />
@@ -32,14 +32,17 @@ function LuxuryHero({ cars }) {
               key={idx}
               className="absolute top-[70%] -translate-y-1/2"
               style={{
-                left: `${idx * 250}px`, // spacing between cars
+                left: `${idx * 250}px`,
                 zIndex: idx + 1,
               }}>
               <Image
                 src={car.img}
                 alt={car.name}
-                // Added 'max-w-none' to prevent shrinking
+                width={1000}
+                height={600}
                 className="w-[1000px] max-w-none h-auto pointer-events-none select-none"
+                priority={idx === 0}
+                loading={idx === 0 ? "eager" : "lazy"}
               />
             </div>
           ))}

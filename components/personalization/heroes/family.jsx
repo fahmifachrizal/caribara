@@ -36,7 +36,10 @@ function FamilyHero({ cars }) {
           <Image
             src={mainCar.img}
             alt={mainCar.name}
+            width={500}
+            height={300}
             className="w-[500px] h-auto drop-shadow-2xl transform hover:scale-105 transition-transform"
+            priority
           />
 
           <div className="absolute -left-32 top-1/4 opacity-40 transform hover:scale-110 transition-transform">

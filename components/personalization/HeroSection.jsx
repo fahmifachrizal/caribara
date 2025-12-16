@@ -44,17 +44,22 @@ const getCarsByCategory = (cars, category, limit = 4) => {
 export default function HeroSection({ category = "luxury" }) {
   const [carData, setCarData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     // Fetch car data from public folder
     fetch("/db_cars.json")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load car data")
+        return res.json()
+      })
       .then((data) => {
         setCarData(data)
         setLoading(false)
       })
-      .catch((error) => {
-        console.error("Error loading car data:", error)
+      .catch((err) => {
+        console.error("Error loading car data:", err)
+        setError(err.message)
         setLoading(false)
       })
   }, [])
@@ -64,16 +69,19 @@ export default function HeroSection({ category = "luxury" }) {
       <div className="w-full h-screen flex items-center justify-center bg-zinc-950">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white text-xl">Loading...</p>
+          <p className="text-white text-xl">Loading your journey...</p>
         </div>
       </div>
     )
   }
 
-  if (!carData) {
+  if (error || !carData) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-zinc-950">
-        <p className="text-white text-xl">Failed to load car data</p>
+        <div className="text-center max-w-md">
+          <p className="text-white text-xl mb-4">Unable to load car data</p>
+          <p className="text-zinc-400 text-sm">{error || "Please try again later"}</p>
+        </div>
       </div>
     )
   }
