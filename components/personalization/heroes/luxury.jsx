@@ -2,17 +2,15 @@
 import { Button } from "@/components/ui/button"
 import { CarImage } from "@/components/car-image"
 
-// Luxury Hero Section
+// Luxury Hero Section - Server Component with preloaded images
 function LuxuryHero({ cars }) {
   if (!cars || cars.length === 0) return null
 
   return (
-    <div className="w-full h-screen relative overflow-hidden">
-      {/* Dark overlay */}
-      <div className="absolute inset-0" />
-
+    <div className="w-full h-screen relative overflow-hidden bg-transparent">
+      {/* Removed dark overlay that was causing flash */}
       {/* Soft glow */}
-      <div className="absolute top-1/2 right-1/3 w-96 h-96 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 right-1/3 w-96 h-96 rounded-full blur-3xl opacity-20" />
 
       {/* Main content */}
       <div className="relative z-10 h-full flex items-center justify-between p-12">
@@ -31,10 +29,13 @@ function LuxuryHero({ cars }) {
           {cars.map((car, idx) => (
             <div
               key={idx}
-              className="absolute top-[70%] -translate-y-1/2 transition-transform duration-300 hover:scale-105"
+              className="absolute top-[50%]"
               style={{
-                left: `${idx * 250}px`,
+                left: `${-250 + (idx * 300)}px`,
+                scale: `${ idx === 0 ? 0.8 : 1.0 + (idx * 0.005)}`,
+                top: `${idx === 1 || idx === 2 ? '46%' : idx === 3 ? '47%' : '43%'}`,
                 zIndex: idx + 1,
+                willChange: "transform",
               }}>
               <CarImage
                 src={car.img}

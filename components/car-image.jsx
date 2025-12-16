@@ -2,17 +2,8 @@
 import Image from "next/image"
 
 /**
- * SSR-Ready CarImage component handles car images with transparent margins
- * Works on both server and client side
- *
- * @param {string} src - Image source URL
- * @param {string} alt - Alt text
- * @param {number} width - Desired width (optional if height is provided)
- * @param {number} height - Desired height (optional if width is provided)
- * @param {number} aspectRatio - Default aspect ratio (default: 16/9)
- * @param {string} className - Additional CSS classes
- * @param {boolean} priority - Image loading priority
- * @param {string} objectFit - CSS object-fit value (default: "contain")
+ * Server-Side CarImage component - No flash, loads immediately
+ * Uses unoptimized images to load from external sources without flashing
  */
 export function CarImage({
   src,
@@ -33,7 +24,13 @@ export function CarImage({
   return (
     <div
       className={`relative ${className}`}
-      style={{ width: calculatedWidth, height: calculatedHeight }}>
+      style={{ 
+        width: calculatedWidth, 
+        height: calculatedHeight,
+        minHeight: calculatedHeight,
+        // Remove white background
+        backgroundColor: 'transparent',
+      }}>
       <Image
         src={src}
         alt={alt}
@@ -44,8 +41,15 @@ export function CarImage({
           objectFit,
           width: "100%",
           height: "100%",
+          // Smooth image appearance
+          opacity: 1,
+          transition: 'none',
         }}
         priority={priority}
+        // Use unoptimized for external images to prevent flash
+        unoptimized={src.startsWith('http')}
+        // Remove loading attribute to prevent flash
+        loading={priority ? 'eager' : 'lazy'}
         {...props}
       />
     </div>

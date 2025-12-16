@@ -37,33 +37,11 @@ function FamilyHero({ cars }) {
           <CarImage
             src={mainCar.img}
             alt={mainCar.name}
-            width={500}
-            className="drop-shadow-2xl transform hover:scale-105 transition-transform"
+            width={1000}
+            className="drop-shadow-2xl transform transition-transform"
             priority
             objectFit="contain"
           />
-
-          <div className="absolute -left-32 top-1/4 opacity-40 transform hover:scale-110 transition-transform">
-            <div className="text-6xl">🎒</div>
-            <span className="text-white text-sm">Luggage</span>
-          </div>
-          <div className="absolute -right-32 top-1/4 opacity-40 transform hover:scale-110 transition-transform">
-            <div className="text-6xl">🍼</div>
-            <span className="text-white text-sm">Baby Gear</span>
-          </div>
-          <div className="absolute -bottom-16 left-1/4 opacity-40 transform hover:scale-110 transition-transform">
-            <div className="text-6xl">🧳</div>
-            <span className="text-white text-sm">Travel</span>
-          </div>
-
-          <div className="absolute -bottom-32 right-0 bg-white/10 backdrop-blur-md p-4 rounded-lg opacity-60">
-            <div className="text-white text-sm mb-2">Seating: 7 passengers</div>
-            <div className="grid grid-cols-3 gap-2">
-              {[...Array(7)].map((_, i) => (
-                <div key={i} className="w-6 h-6 bg-pink-300/50 rounded" />
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 

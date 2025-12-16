@@ -119,4 +119,31 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Prevent layout shift from images */
+  img {
+    @apply block;
+    /* Remove default background */
+    background: transparent !important;
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Prevent FOUT (Flash of Unstyled Text) */
+  body {
+    font-display: swap;
+  }
+
+  /* Prevent flash during image load */
+  img[loading="lazy"] {
+    opacity: 1 !important;
+  }
+
+  /* Remove Next.js image wrapper background */
+  span[style*="box-sizing"] {
+    background: transparent !important;
+  }
 }

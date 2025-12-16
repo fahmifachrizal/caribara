@@ -36,8 +36,10 @@ function ElectricHero({ cars }) {
               key={idx}
               className="absolute -bottom-20"
               style={{
-                left: `${idx * 200}px`,
+                left: `${idx * 180}px`,
                 zIndex: idx + 1,
+                willChange: "transform",
+                contentVisibility: "auto",
               }}>
               <CarImage
                 src={car.img}
@@ -49,11 +51,11 @@ function ElectricHero({ cars }) {
               />
             </div>
           ))}
-          <div className="absolute bottom-0 right-20">
+          <div className="absolute bottom-10 right-5">
             <CarImage
               src="https://i.ibb.co.com/CXFkbJC/charging-station.png"
               alt="Charging Station"
-              width={250}
+              height={400}
               className="mx-auto drop-shadow-2xl"
               priority
             />

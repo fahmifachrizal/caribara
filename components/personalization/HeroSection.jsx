@@ -19,10 +19,10 @@ const getCarsByCategory = (cars, category, limit = 4) => {
       side = 3
       break
     case "luxury":
-      side = 5
+      side = 1
       break
     case "budget":
-      side = 3
+      side = 4
       break
     case "family":
       side = 6

@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950">
       {/* Use the new HeroSection with category prop */}
-      <HeroSection category="electric" />
+      <HeroSection category="family" />
 
       {/* Feature Block 1 - Premium Fleet */}
       <FeatureBlock

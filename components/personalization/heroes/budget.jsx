@@ -40,47 +40,33 @@ function BudgetHero({ cars: initialCars }) {
           </div>
         </div>
 
-        <div
-          className="space-y-8 max-w-5xl mx-auto"
-          style={{ perspective: "1200px" }}>
-          <div className="flex justify-center gap-6">
-            {cars.slice(0, 4).map((car, idx) => (
-              <div
-                key={idx}
-                className="relative transform hover:scale-110 transition-transform"
-                style={{ transform: `translateZ(${50 - idx * 10}px)` }}>
-                <CarImage
-                  src={car.img}
-                  alt={car.name}
-                  width={160}
-                  className="drop-shadow-xl"
-                  priority={idx === 0}
-                  objectFit="contain"
-                />
-                <div className="absolute -top-4 -right-4 bg-yellow-400 text-zinc-900 px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
-                  ${30 + idx * 5}/day
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="space-y-8 w-full">
+          <div className="relative flex w-full justify-center">
+            {cars.slice(0, 4).map((car, idx) => {
+              const offset = (idx - 3 / 2) * 400
 
-          <div className="flex justify-center gap-6 opacity-70">
-            {cars.slice(4).map((car, idx) => (
-              <div
-                key={idx}
-                className="relative transform hover:scale-110 transition-transform"
-                style={{
-                  transform: `translateZ(${-50 - idx * 10}px) scale(0.85)`,
-                }}>
-                <CarImage
-                  src={car.img}
-                  alt={car.name}
-                  width={128}
-                  className="drop-shadow-xl"
-                  objectFit="contain"
-                />
-              </div>
-            ))}
+              return (
+                <div
+                  key={idx}
+                  className="absolute"
+                  style={{
+                    translate: `${offset}px ${idx === 0 ? "-10px" : "0"}`,
+                    scale: idx === 3 ? 0.9 : idx === 0 ? 1.1 : 1.0,
+                  }}>
+                  <CarImage
+                    src={car.img}
+                    alt={car.name}
+                    width={660}
+                    className="drop-shadow-lg"
+                    priority={idx === 0}
+                    objectFit="contain"
+                  />
+                  <div className="absolute top-[90%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-400 text-zinc-900 px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-bounce">
+                    {200 + idx * 5}k/day
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
