@@ -56,7 +56,7 @@ export default async function HeroSection({ category = "luxury" }) {
     ),
     luxury: <LuxuryHero cars={getCarsByCategory(carData.cars, "Luxury")} />,
     budget: <BudgetHero cars={getCarsByCategory(carData.cars, "Budget")} />,
-    family: <FamilyHero cars={getCarsByCategory(carData.cars, "Family")} />,
+    family: <FamilyHero cars={getCarsByCategory(carData.cars, "Family", 5)} />,
     latest: <LatestHero cars={getCarsByCategory(carData.cars, "Latest")} />,
   }
 
