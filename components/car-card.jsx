@@ -1,6 +1,8 @@
+// components/car-card.jsx
 import { Button } from "@/components/ui/button"
 import { Users, Gauge, Zap, Star } from "lucide-react"
 
+// Server Component - No client-side state
 export default function CarCard({ car, heightVariant = "medium" }) {
   const heights = {
     short: "min-h-[380px]",

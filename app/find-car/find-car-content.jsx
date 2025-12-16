@@ -1,3 +1,4 @@
+// app/find-car/FindCarContent.jsx
 "use client"
 
 import { useState } from "react"
@@ -154,7 +155,7 @@ const categories = [
   "Electric",
 ]
 
-export default function FindCarPage() {
+function FindCarContent() {
   const [filter, setFilter] = useState("All")
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -336,3 +337,5 @@ export default function FindCarPage() {
     </div>
   )
 }
+
+export { FindCarContent }

@@ -1,3 +1,4 @@
+// app/cms/CMSContent.jsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,7 +9,6 @@ import {
   TestTube,
   Users,
   BarChart,
-  Save,
   RefreshCw,
   Eye,
   EyeOff,
@@ -18,33 +18,18 @@ import {
   Check,
   X,
 } from "lucide-react"
-import {
-  getAllTests,
-  saveTestConfig,
-  deleteTest,
-} from "@/lib/firebase/abTesting"
-import {
-  getAllRules,
-  saveRule,
-  deleteRule,
-} from "@/lib/firebase/personalization"
-import { getPortfolioStats } from "@/lib/firebase/likeRating"
 
-export default function CMSPage() {
+function CMSContent() {
   const [activeTab, setActiveTab] = useState("ab-testing")
   const [isPublicView, setIsPublicView] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  // A/B Testing State
+  // Mock data for demonstration
   const [abTests, setAbTests] = useState([])
   const [editingTest, setEditingTest] = useState(null)
-
-  // Personalization State
   const [personalizationRules, setPersonalizationRules] = useState([])
   const [editingRule, setEditingRule] = useState(null)
-
-  // Analytics State
   const [stats, setStats] = useState({
     totalLikes: 0,
     totalRatings: 0,
@@ -52,68 +37,71 @@ export default function CMSPage() {
     totalVisits: 0,
   })
 
-  // Load data on mount
   useEffect(() => {
+    // Simulate data loading
+    const loadData = async () => {
+      setLoading(true)
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      // Mock data
+      setAbTests([
+        {
+          id: "1",
+          name: "Homepage Hero Test",
+          status: "active",
+          variants: ["Original", "Variant A"],
+          traffic: 50,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ])
+
+      setPersonalizationRules([
+        {
+          id: "1",
+          name: "First Visit Welcome",
+          condition: "visits = 1",
+          action: "Show welcome message",
+          enabled: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ])
+
+      setStats({
+        totalLikes: 125,
+        totalRatings: 89,
+        averageRating: 4.6,
+        totalVisits: 1250,
+      })
+
+      setLoading(false)
+    }
+
     loadData()
   }, [])
 
-  const loadData = async () => {
-    setLoading(true)
-    try {
-      const [tests, rules, portfolioStats] = await Promise.all([
-        getAllTests(),
-        getAllRules(),
-        getPortfolioStats(),
-      ])
-
-      setAbTests(tests)
-      setPersonalizationRules(rules)
-      setStats(portfolioStats)
-    } catch (error) {
-      console.error("Error loading data:", error)
-      alert("Error loading data. Please check your Firebase configuration.")
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleSaveTest = async (test) => {
     setSaving(true)
-    try {
-      const success = await saveTestConfig(test)
-      if (success) {
-        await loadData()
-        setEditingTest(null)
-        alert("Test saved successfully!")
-      } else {
-        alert("Error saving test. Please try again.")
-      }
-    } catch (error) {
-      console.error("Error saving test:", error)
-      alert("Error saving test. Please try again.")
-    } finally {
-      setSaving(false)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    if (test.id && abTests.find((t) => t.id === test.id)) {
+      setAbTests(abTests.map((t) => (t.id === test.id ? test : t)))
+    } else {
+      setAbTests([...abTests, { ...test, id: Date.now().toString() }])
     }
+
+    setEditingTest(null)
+    setSaving(false)
   }
 
   const handleDeleteTest = async (id) => {
     if (!confirm("Are you sure you want to delete this test?")) return
 
     setSaving(true)
-    try {
-      const success = await deleteTest(id)
-      if (success) {
-        await loadData()
-        alert("Test deleted successfully!")
-      } else {
-        alert("Error deleting test. Please try again.")
-      }
-    } catch (error) {
-      console.error("Error deleting test:", error)
-      alert("Error deleting test. Please try again.")
-    } finally {
-      setSaving(false)
-    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setAbTests(abTests.filter((t) => t.id !== id))
+    setSaving(false)
   }
 
   const handleAddTest = () => {
@@ -131,41 +119,30 @@ export default function CMSPage() {
 
   const handleSaveRule = async (rule) => {
     setSaving(true)
-    try {
-      const success = await saveRule(rule)
-      if (success) {
-        await loadData()
-        setEditingRule(null)
-        alert("Rule saved successfully!")
-      } else {
-        alert("Error saving rule. Please try again.")
-      }
-    } catch (error) {
-      console.error("Error saving rule:", error)
-      alert("Error saving rule. Please try again.")
-    } finally {
-      setSaving(false)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    if (rule.id && personalizationRules.find((r) => r.id === rule.id)) {
+      setPersonalizationRules(
+        personalizationRules.map((r) => (r.id === rule.id ? rule : r))
+      )
+    } else {
+      setPersonalizationRules([
+        ...personalizationRules,
+        { ...rule, id: Date.now().toString() },
+      ])
     }
+
+    setEditingRule(null)
+    setSaving(false)
   }
 
   const handleDeleteRule = async (id) => {
     if (!confirm("Are you sure you want to delete this rule?")) return
 
     setSaving(true)
-    try {
-      const success = await deleteRule(id)
-      if (success) {
-        await loadData()
-        alert("Rule deleted successfully!")
-      } else {
-        alert("Error deleting rule. Please try again.")
-      }
-    } catch (error) {
-      console.error("Error deleting rule:", error)
-      alert("Error deleting rule. Please try again.")
-    } finally {
-      setSaving(false)
-    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setPersonalizationRules(personalizationRules.filter((r) => r.id !== id))
+    setSaving(false)
   }
 
   const handleAddRule = () => {
@@ -438,7 +415,7 @@ export default function CMSPage() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-3xl font-bold">Analytics Overview</h2>
-                <Button onClick={loadData} variant="outline">
+                <Button variant="outline">
                   <RefreshCw size={20} />
                   Refresh
                 </Button>
@@ -635,3 +612,5 @@ function RuleEditor({ rule, onSave, onCancel, saving }) {
     </div>
   )
 }
+
+export { CMSContent }
